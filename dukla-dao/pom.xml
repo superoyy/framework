@@ -11,10 +11,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.dukla</groupId>
-            <artifactId>dukla                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  -domain</artifactId>
+          <groupId>com.dukla</groupId>
+          <artifactId>dukla-domain</artifactId>
         </dependency>
     </dependencies>
-
-
 </project>
