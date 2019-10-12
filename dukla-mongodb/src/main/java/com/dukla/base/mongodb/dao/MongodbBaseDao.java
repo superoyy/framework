@@ -1,8 +1,8 @@
 package com.dukla.base.mongodb.dao;
 
-import com.mongodb.WriteResult;
 import com.dukla.base.mongodb.entity.BaseDocumentEntity;
 import com.dukla.base.util.Kit;
+import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -190,34 +190,34 @@ public abstract class MongodbBaseDao<T extends BaseDocumentEntity> {
     /**
      * 修改实体
      */
-    public WriteResult updateEntity(T entity) {
+    public UpdateResult updateEntity(T entity) {
         Map<String, Object> kv = this.getEntityFields(entity);
         return this.updateEntity(entity.getId(), kv);
     }
 
-    public WriteResult updateEntity(String id, String propKey, Object propValue) {
+    public UpdateResult updateEntity(String id, String propKey, Object propValue) {
         Map<String, Object> kv = new HashMap<String, Object>();
         kv.put(propKey, propValue);
         return this.updateEntity(id, kv);
     }
 
-    public WriteResult updateEntity(String id, Map<String, Object> kv) {
+    public UpdateResult updateEntity(String id, Map<String, Object> kv) {
         Query query = new Query(Criteria.where("id").is(id));
         Update update = this.genUpdate(kv);
         return this.mongoTemplate.updateFirst(query, update, this.getEntityClazz());
     }
 
-    public WriteResult updateEntityByCriteria(Criteria criteria, Map<String, Object> kv) {
+    public UpdateResult updateEntityByCriteria(Criteria criteria, Map<String, Object> kv) {
         Update update = this.genUpdate(kv);
         return this.updateEntityByCriteria(criteria, update);
     }
 
-    public WriteResult updateEntityByCriteria(Criteria criteria, Update update) {
+    public UpdateResult updateEntityByCriteria(Criteria criteria, Update update) {
         Query query = new Query(criteria);
         return this.mongoTemplate.updateMulti(query, update, this.getEntityClazz());
     }
 
-    public WriteResult updateEntityByProps(Map<String, Object> params, Map<String, Object> kv) {
+    public UpdateResult updateEntityByProps(Map<String, Object> params, Map<String, Object> kv) {
         Criteria criteria = new Criteria();
         for (String key : params.keySet()) {
             criteria.and(key).is(params.get(key));
@@ -225,7 +225,7 @@ public abstract class MongodbBaseDao<T extends BaseDocumentEntity> {
         return this.updateEntityByCriteria(criteria, kv);
     }
 
-    public WriteResult updateEntityByProp(String propKey, Object propValue, Map<String, Object> kv) {
+    public UpdateResult updateEntityByProp(String propKey, Object propValue, Map<String, Object> kv) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(propKey, propValue);
         return this.updateEntityByProps(params, kv);

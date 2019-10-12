@@ -1,6 +1,6 @@
 package com.dukla.base.mongodb.handler;
 
-import com.mongodb.WriteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
 import com.dukla.base.mongodb.entity.BaseDocumentEntity;
@@ -57,19 +57,19 @@ public interface MongodbHandler {
 
     public String addEntity(BaseDocumentEntity entity) throws Exception;
 
-    public WriteResult modifyEntity(BaseDocumentEntity entity) throws Exception;
+    public UpdateResult modifyEntity(BaseDocumentEntity entity) throws Exception;
 
-    public <T> WriteResult modifyEntity(Class<T> entityClazz, String id, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntity(Class<T> entityClazz, String id, Map<String, Object> kv) throws Exception;
 
-    public <T> WriteResult modifyEntity(Class<T> entityClazz, String id, String propKey, Object propValue) throws Exception;
+    public <T> UpdateResult modifyEntity(Class<T> entityClazz, String id, String propKey, Object propValue) throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Map<String, Object> kv) throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Update update)  throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Update update)  throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Map<String, Object> params, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Map<String, Object> params, Map<String, Object> kv) throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, String propKey, Object propValue, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, String propKey, Object propValue, Map<String, Object> kv) throws Exception;
 
     public <T> void removeEntity(Class<T> entityClazz, String id) throws Exception;
 

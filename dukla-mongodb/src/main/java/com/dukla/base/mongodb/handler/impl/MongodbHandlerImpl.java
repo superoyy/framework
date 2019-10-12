@@ -1,6 +1,7 @@
 package com.dukla.base.mongodb.handler.impl;
 
 import com.mongodb.WriteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
 import com.dukla.base.mongodb.entity.BaseDocumentEntity;
@@ -9,7 +10,7 @@ import com.dukla.base.mongodb.handler.MongodbHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,7 +33,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @Service("mongodbHandler")
-public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<ApplicationReadyEvent> {
+public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<ApplicationStartedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(MongodbHandlerImpl.class);
 
@@ -51,7 +52,7 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
     }
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(ApplicationStartedEvent event) {
         if(event.getApplicationContext()!=null){
             Map<String,MongodbBaseDao> daoCollection=event.getApplicationContext().getBeansOfType(MongodbBaseDao.class);
             for (MongodbBaseDao dao:daoCollection.values()){
@@ -180,44 +181,44 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
 
 
     @Override
-    public WriteResult modifyEntity(BaseDocumentEntity entity) throws Exception {
+    public UpdateResult modifyEntity(BaseDocumentEntity entity) throws Exception {
         MongodbBaseDao dao=this.getDao(entity.getClass().getCanonicalName());
         return dao.updateEntity(entity);
     }
 
     @Override
-    public <T> WriteResult modifyEntity(Class<T> entityClazz, String id, Map<String, Object> kv) throws Exception {
+    public <T> UpdateResult modifyEntity(Class<T> entityClazz, String id, Map<String, Object> kv) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.updateEntity(id,kv);
     }
 
     @Override
-    public <T> WriteResult modifyEntity(Class<T> entityClazz, String id, String propKey, Object propValue) throws Exception {
+    public <T> UpdateResult modifyEntity(Class<T> entityClazz, String id, String propKey, Object propValue) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.updateEntity(id,propKey,propValue);
     }
 
     @Override
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Map<String, Object> kv) throws Exception {
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Map<String, Object> kv) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.updateEntityByCriteria(criteria, kv);
     }
 
     @Override
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz,Criteria criteria,Update update)  throws Exception{
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz,Criteria criteria,Update update)  throws Exception{
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.updateEntityByCriteria(criteria, update);
     }
 
 
     @Override
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Map<String, Object> params, Map<String, Object> kv) throws Exception {
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Map<String, Object> params, Map<String, Object> kv) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.updateEntityByProps(params,kv);
     }
 
     @Override
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, String propKey, Object propValue, Map<String, Object> kv) throws Exception {
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, String propKey, Object propValue, Map<String, Object> kv) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.updateEntityByProp(propKey, propValue, kv);
     }
@@ -255,7 +256,9 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
 
     @Override
     public GridFSFile saveFile(InputStream content, String filename, String contentType, Map<String,Object> metadata){
-        return this.gridFsTemplate.store(content,filename,contentType,metadata);
+        // need recode
+        //return this.gridFsTemplate.store(content,filename,contentType,metadata);
+        return null;
     }
 
     @Override
@@ -280,31 +283,35 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
 
     @Override
     public List<GridFSDBFile> getFiles(Criteria criteria,int start,int count,Map<String, String> orderProps){
-        Query query = new Query(criteria);
-        if (orderProps != null) {
-            for (String key : orderProps.keySet()) {
-                if ("ASC".equals(orderProps.get(key).toUpperCase())) {
-                    Sort sort=new Sort(Sort.Direction.ASC,key);
-                    query.with(sort);
-                } else if ("DESC".equals(orderProps.get(key).toUpperCase())) {
-                    Sort sort=new Sort(Sort.Direction.DESC,key);
-                    query.with(sort);
-                }
-            }
-        }
-        int skip = start < 0 ? 0 : start;
-        int limit = count < 0 ? 0 : count;
-        if (skip >= 0 && limit >= 1) {
-            query.skip(skip);
-            query.limit(limit);
-        }
-        return this.gridFsTemplate.find(query);
+        // need recode
+//        Query query = new Query(criteria);
+//        if (orderProps != null) {
+//            for (String key : orderProps.keySet()) {
+//                if ("ASC".equals(orderProps.get(key).toUpperCase())) {
+//                    Sort sort=new Sort(Sort.Direction.ASC,key);
+//                    query.with(sort);
+//                } else if ("DESC".equals(orderProps.get(key).toUpperCase())) {
+//                    Sort sort=new Sort(Sort.Direction.DESC,key);
+//                    query.with(sort);
+//                }
+//            }
+//        }
+//        int skip = start < 0 ? 0 : start;
+//        int limit = count < 0 ? 0 : count;
+//        if (skip >= 0 && limit >= 1) {
+//            query.skip(skip);
+//            query.limit(limit);
+//        }
+//        return this.gridFsTemplate.find(query);
+        return null;
     }
 
     @Override
     public GridFSDBFile getFileOne(Criteria criteria){
-        Query query = new Query(criteria);
-        return this.gridFsTemplate.findOne(query);
+        // need recode
+//        Query query = new Query(criteria);
+//        return this.gridFsTemplate.findOne(query);
+        return null;
     }
 
     @Override
