@@ -6,8 +6,7 @@ import com.dukla.base.jpa.entity.BaseEntity;
 import com.dukla.base.jpa.handler.HibernateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,7 @@ import java.util.Map;
  * @since 2018.1
  */
 @Service("hibernateHandler")
-public class HibernateHandlerImpl implements HibernateHandler,ApplicationListener<ApplicationStartedEvent> {
+public class HibernateHandlerImpl implements HibernateHandler{
 
     private static final Logger logger = LoggerFactory.getLogger(HibernateHandlerImpl.class);
 
@@ -37,12 +36,16 @@ public class HibernateHandlerImpl implements HibernateHandler,ApplicationListene
         return dao;
     }
 
+    /**
+     * map entityBean to Dao
+     * @param applicationContext
+     */
     @Override
-    public void onApplicationEvent(ApplicationStartedEvent event) {
-        if(event.getApplicationContext()!=null){
-            Map<String,HibernateBaseDao> daoCollection=event.getApplicationContext().getBeansOfType(HibernateBaseDao.class);
+    public void registerDaoMap(ApplicationContext applicationContext) {
+        if(applicationContext!=null){
+            Map<String,HibernateBaseDao> daoCollection=applicationContext.getBeansOfType(HibernateBaseDao.class);
             for (HibernateBaseDao dao:daoCollection.values()){
-                logger.info("{} Register DaoMap:{} -> {}",this.getClass().getTypeName(),dao.getEntityClazz().getCanonicalName(),dao.getClass().getCanonicalName());
+                logger.info("{} Register Hibernate DaoMap:{} -> {}",this.getClass().getTypeName(),dao.getEntityClazz().getCanonicalName(),dao.getClass().getCanonicalName());
                 this.daoMap.put(dao.getEntityClazz().getCanonicalName(), dao);
             }
         }

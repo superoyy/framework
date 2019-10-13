@@ -2,6 +2,7 @@ package com.dukla.base.jpa.handler;
 
 import com.dukla.base.jpa.dao.QueryParam;
 import com.dukla.base.jpa.entity.BaseEntity;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import java.util.Map;
  * 2016.10
  */
 public interface HibernateHandler {
+
+    public void registerDaoMap(ApplicationContext applicationContext);
 
     public String addEntity(BaseEntity entity);
 
