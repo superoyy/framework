@@ -194,11 +194,11 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	 * 根据实体属性得到实体列表
 	 */
 	public List<T> getEntityListByProperty(String propertyName,Object propertyValue,Map<String,String> orderProps){
-		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?";
+		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?1";
 		hql=this.genOrderHql(hql, orderProps);
 		logger.debug(hql);
         Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
-        query.setParameter(0,propertyValue);
+        query.setParameter(1,propertyValue);
 		return query.list();
 	}
 	/*
@@ -215,11 +215,11 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	 * 根据实体属性得到一页记录
 	 */
 	public List<T> getEntityListByProperty(String propertyName,Object propertyValue,int start, int count,Map<String,String> orderProps){
-		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?";
+		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?1";
 		hql=this.genOrderHql(hql, orderProps);
         logger.debug(hql);
         Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
-		query.setParameter(0, propertyValue);
+		query.setParameter(1, propertyValue);
 		query.setFirstResult(start);
 		query.setMaxResults(count);
 		return (List<T>) query.list();
