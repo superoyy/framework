@@ -6,7 +6,7 @@ import com.dukla.base.jpa.entity.BaseEntity;
 import com.dukla.base.jpa.handler.HibernateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,10 +20,10 @@ import java.util.Map;
  * 通过Hibernate访问数据服务实现
  * @version 2.0
  * @author 欧阳亚
- * @since 2018.1
+ * @since 2019.10
  */
 @Service("hibernateHandler")
-public class HibernateHandlerImpl implements HibernateHandler,ApplicationListener<ApplicationReadyEvent> {
+public class HibernateHandlerImpl implements HibernateHandler,ApplicationListener<ApplicationStartedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(HibernateHandlerImpl.class);
 
@@ -38,7 +38,7 @@ public class HibernateHandlerImpl implements HibernateHandler,ApplicationListene
     }
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(ApplicationStartedEvent event) {
         if(event.getApplicationContext()!=null){
             Map<String,HibernateBaseDao> daoCollection=event.getApplicationContext().getBeansOfType(HibernateBaseDao.class);
             for (HibernateBaseDao dao:daoCollection.values()){

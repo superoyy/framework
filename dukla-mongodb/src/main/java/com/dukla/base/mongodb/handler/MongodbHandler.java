@@ -1,10 +1,11 @@
 package com.dukla.base.mongodb.handler;
 
-import com.mongodb.WriteResult;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSFile;
+import com.mongodb.client.gridfs.GridFSFindIterable;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.dukla.base.mongodb.entity.BaseDocumentEntity;
 import com.dukla.base.mongodb.dao.MongodbBaseDao;
+import com.mongodb.client.result.UpdateResult;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 
@@ -57,19 +58,19 @@ public interface MongodbHandler {
 
     public String addEntity(BaseDocumentEntity entity) throws Exception;
 
-    public WriteResult modifyEntity(BaseDocumentEntity entity) throws Exception;
+    public UpdateResult modifyEntity(BaseDocumentEntity entity) throws Exception;
 
-    public <T> WriteResult modifyEntity(Class<T> entityClazz, String id, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntity(Class<T> entityClazz, String id, Map<String, Object> kv) throws Exception;
 
-    public <T> WriteResult modifyEntity(Class<T> entityClazz, String id, String propKey, Object propValue) throws Exception;
+    public <T> UpdateResult modifyEntity(Class<T> entityClazz, String id, String propKey, Object propValue) throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Map<String, Object> kv) throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Update update)  throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Criteria criteria, Update update)  throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, Map<String, Object> params, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, Map<String, Object> params, Map<String, Object> kv) throws Exception;
 
-    public <T> WriteResult modifyEntityBatch(Class<T> entityClazz, String propKey, Object propValue, Map<String, Object> kv) throws Exception;
+    public <T> UpdateResult modifyEntityBatch(Class<T> entityClazz, String propKey, Object propValue, Map<String, Object> kv) throws Exception;
 
     public <T> void removeEntity(Class<T> entityClazz, String id) throws Exception;
 
@@ -81,23 +82,23 @@ public interface MongodbHandler {
 
     public <T> void removeEntityBatch(Class<T> entityClazz, String propKey, Object propValue) throws Exception;
 
-    public GridFSFile saveFile(InputStream content, String filename, String contentType, Map<String, Object> meta);
+    public ObjectId saveFile(InputStream content, String filename, String contentType, Map<String, Object> meta);
 
-    public GridFSDBFile getFileById(String id);
+    public GridFSFile getFileById(String id);
 
     public void removeFileById(String id);
 
     public void removeFile(Criteria criteria);
 
-    public List<GridFSDBFile> getFiles(Criteria criteria);
+    public GridFSFindIterable getFiles(Criteria criteria);
 
-    public List<GridFSDBFile> getFiles(Criteria criteria, Map<String, String> orderProps);
+    public GridFSFindIterable getFiles(Criteria criteria, Map<String, String> orderProps);
 
-    public List<GridFSDBFile> getFiles(Criteria criteria, int start, int count);
+    public GridFSFindIterable getFiles(Criteria criteria, int start, int count);
 
-    public List<GridFSDBFile> getFiles(Criteria criteria, int start, int count, Map<String, String> orderProps);
+    public GridFSFindIterable getFiles(Criteria criteria, int start, int count, Map<String, String> orderProps);
 
-    public GridFSDBFile getFileOne(Criteria criteria);
+    public GridFSFile getFileOne(Criteria criteria);
 
 
 
