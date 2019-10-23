@@ -10,16 +10,16 @@ import java.util.Map;
  * @Date: 2019/10/22
  */
 @Configuration
-@ConfigurationProperties(prefix = HbaseConfig.CONF_PREFIX)
-public class HbaseConfig {
-    public static final String CONF_PREFIX = "hbase.conf";
+@ConfigurationProperties(prefix = "hbase.conf")
+public class HBaseConfig {
+
     private Map<String, String> confMaps;
 
-    public Map<String, String> getconfMaps() {
+    public Map<String, String> getConfMaps() {
         return confMaps;
     }
 
-    public void setconfMaps(Map<String, String> confMaps) {
+    public void setConfMaps(Map<String, String> confMaps) {
         this.confMaps = confMaps;
     }
 }
