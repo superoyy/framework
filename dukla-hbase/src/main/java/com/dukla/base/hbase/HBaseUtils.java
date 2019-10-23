@@ -3,7 +3,6 @@ package com.dukla.base.hbase;
 /**
  * Created by dukla on 10/23/19.
  */
-
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
@@ -154,7 +153,7 @@ public class HBaseUtils {
     public void deleteColumnFamily(String tablename, String rowkey, String columnFamily) throws IOException {
         TableName name = TableName.valueOf(tablename);
         Table table = connection.getTable(name);
-        Delete d = new Delete(rowkey.getBytes()).deleteFamily(Bytes.toBytes(columnFamily));
+        Delete d = new Delete(rowkey.getBytes()).addFamily(Bytes.toBytes(columnFamily));
         table.delete(d);
     }
 
@@ -170,7 +169,7 @@ public class HBaseUtils {
             IOException {
         TableName name = TableName.valueOf(tablename);
         Table table = connection.getTable(name);
-        Delete d = new Delete(rowkey.getBytes()).deleteColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(column));
+        Delete d = new Delete(rowkey.getBytes()).addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(column));
         table.delete(d);
     }
 
