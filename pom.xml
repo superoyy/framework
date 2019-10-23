@@ -19,6 +19,7 @@
         <module>dukla-jpa</module>
         <module>dukla-sql</module>
         <module>dukla-mongodb</module>
+        <module>dukla-hbase</module>
     </modules>
 
     <dependencyManagement>
