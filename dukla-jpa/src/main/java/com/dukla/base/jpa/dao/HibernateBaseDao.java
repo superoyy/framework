@@ -1,7 +1,7 @@
 package com.dukla.base.jpa.dao;
 
 import com.dukla.base.jpa.entity.BaseEntity;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -24,18 +24,16 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 
     private Class<T> entityClazz;
 
-    static final Logger logger = LoggerFactory.getLogger(HibernateBaseDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(HibernateBaseDao.class);
 
     @Autowired
-    EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory emf;
 
-    SessionFactory getSessionFactory() {
-
-
-        if(entityManagerFactory.unwrap(SessionFactory.class) == null){
+    private Session getSession() {
+        if(emf.unwrap(SessionFactory.class) == null){
             throw new NullPointerException("factory is not a hibernate factory");
         }
-        return entityManagerFactory.unwrap(SessionFactory.class);
+        return emf.unwrap(SessionFactory.class).getCurrentSession();
     }
 
 
@@ -51,7 +49,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	/**
 	 * for genWhereSql
 	 */
-	private class ParamPos{
+	private static class ParamPos{
     	private int pos;
 
     	public ParamPos(int start){
@@ -183,7 +181,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
      * @param entity
      */
     public void evictEntity(T entity){
-        this.getSessionFactory().getCurrentSession().evict(entity);
+        this.getSession().evict(entity);
     }
 
 	/**
@@ -191,14 +189,14 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	 */
 	public String insertEntity(T entity){
         logger.debug("insert entity " + entity.getClass().getCanonicalName());
-        return (String) this.getSessionFactory().getCurrentSession().save(entity);
+        return (String) this.getSession().save(entity);
     }
 	/**
 	 * 修改一个实体
 	 */
 	public void updateEntity(T entity){
         logger.debug("update entity "+entity.getClass().getCanonicalName());
-        this.getSessionFactory().getCurrentSession().update(entity);
+        this.getSession().update(entity);
     }
 	/**
 	 * 删除一个实体
@@ -206,7 +204,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	public void deleteEntity(T entity){
         logger.debug("delete entity "+entity.getClass().getCanonicalName());
         this.evictEntity(entity);
-        this.getSessionFactory().getCurrentSession().delete(entity);
+        this.getSession().delete(entity);
     }
 
 	/**
@@ -215,7 +213,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	public void deleteEntityByProperty(String propertyName,Object propertyValue){
 		String hql="delete "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?1";
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         query.setParameter(1, propertyValue);
         query.executeUpdate();
 	}
@@ -233,7 +231,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		}
 		String hql="delete "+this.getEntityClazz().getCanonicalName()+" _t001 where 1=1 "+keys.toString();
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         for(int j=0;j<values.length;j++){
             query.setParameter(j+1,values[j]);
         }
@@ -252,7 +250,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 			hql=this.genWhereHql(hql, params, queryParam,paramPos);
 		}
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         for(int j=0;j<params.size();j++){
             query.setParameter(j+1,params.get(j));
         }
@@ -262,7 +260,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	 * 根据id得到实体
 	 */
 	public T getEntityById(String id){
-        return (T) this.getSessionFactory().getCurrentSession().get(this.getEntityClazz(),id);
+        return (T) this.getSession().get(this.getEntityClazz(),id);
 	}
 	/**
 	 * 根据实体属性得到实体列表
@@ -271,7 +269,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?1";
 		hql=this.genOrderHql(hql, orderProps);
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         query.setParameter(1,propertyValue);
 		return query.list();
 	}
@@ -281,7 +279,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	public int getEntityCountByProperty(String propertyName,Object propertyValue){
 		String hql="select count(_t001) from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?1";
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		query.setParameter(1, propertyValue);
 		return ((Long)query.uniqueResult()).intValue();
 	}
@@ -292,7 +290,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where _t001."+propertyName+"=?1";
 		hql=this.genOrderHql(hql, orderProps);
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		query.setParameter(1, propertyValue);
 		query.setFirstResult(start);
 		query.setMaxResults(count);
@@ -314,7 +312,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where 1=1 "+keys.toString();
 		hql=this.genOrderHql(hql, orderProps);
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         for(int j=0;j<values.length;j++){
             query.setParameter(j+1,values[j]);
         }
@@ -335,7 +333,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		}
 		String hql="select count(_t001) from "+this.getEntityClazz().getCanonicalName()+" _t001 where 1=1 "+keys.toString();
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		for(int j=0;j<values.length;j++){
 			query.setParameter(j+1, values[j]);
 		}
@@ -357,7 +355,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001 where 1=1 "+keys.toString();
         logger.debug(hql);
 		hql=this.genOrderHql(hql, orderProps);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		for(int j=0;j<values.length;j++){
 			query.setParameter(j+1, values[j]);
 		}
@@ -374,7 +372,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001";
 		hql=this.genOrderHql(hql, orderProps);
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         return query.list();
 	}
 
@@ -384,7 +382,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 	public int getEntityCountAll(){
 		String hql="select count(_t001) from "+this.getEntityClazz().getCanonicalName()+" _t001";
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		return ((Long)query.uniqueResult()).intValue();
 	}
 	/**
@@ -394,7 +392,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		String hql="from "+this.getEntityClazz().getCanonicalName()+" _t001";
 		hql=this.genOrderHql(hql, orderProps);
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		query.setFirstResult(start);
 		query.setMaxResults(count);
 		return query.list();
@@ -411,7 +409,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 			hql=this.genWhereHql(hql, params, queryParam,paramPos);
 		}
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		for(int i=0;i<params.size();i++){
 			query.setParameter(i+1, params.get(i));
 		}
@@ -430,7 +428,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		}
 		hql=this.genOrderHql(hql,orderProps);
 		logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
         for(int j=0;j<params.size();j++){
             query.setParameter(j+1,params.get(j));
         }
@@ -449,7 +447,7 @@ public abstract class HibernateBaseDao<T extends BaseEntity>{
 		}
 		hql=this.genOrderHql(hql, orderProps);
         logger.debug(hql);
-        Query query=this.getSessionFactory().getCurrentSession().createQuery(hql);
+        Query query=this.getSession().createQuery(hql);
 		for(int i=0;i<params.size();i++){
 			query.setParameter(i+1, params.get(i));
 		}
