@@ -166,7 +166,7 @@ public class ExcelHandler {
 	 * 验证Excel数据
 	 */
 	public List<ExcelMessage> verifyExcel(String fileName,long fileSize,InputStream in) throws Exception{
-		List<ExcelMessage> msgList=new ArrayList<>();
+		List<ExcelMessage> msgList=new ArrayList();
 		String fileExt=fileName.substring(fileName.lastIndexOf('.'));
 		if(this.config==null){
 			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"配置对象不存在"));
