@@ -10,7 +10,7 @@
     <artifactId>dukla-util</artifactId>
 
     <properties>
-        <poi.version>3.16</poi.version>
+        <poi.version>4.1.1</poi.version>
         <dom4j.version>1.6.1</dom4j.version>
     </properties>
 
