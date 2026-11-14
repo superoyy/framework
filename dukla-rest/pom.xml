@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.dukla</groupId>
         <artifactId>dukla-base</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>dukla-rest</artifactId>
