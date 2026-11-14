@@ -5,6 +5,13 @@
 1. **定义统一的父 POM**：为基于本框架的 Java 项目提供统一的依赖版本管理（Spring Boot / Spring Cloud BOM）、JDK 编译配置、编码插件与发布流程。
 2. **提供可选工具模块**：按需引入，不引入即不产生任何依赖与配置。
 
+## 版本与分支
+
+| 分支 | 用途 | 当前版本 |
+| --- | --- | --- |
+| `master` | 正式版，业务项目引用此版本 | `1.0.3`（tag `1.0.3`） |
+| `develop` | 开发版，日常开发提交到此分支 | `1.0.4-SNAPSHOT` |
+
 ## 技术栈
 
 | 名称 | 版本 |
@@ -35,13 +42,13 @@
 
 ### 1. 继承父 POM
 
-业务工程的 `pom.xml` 继承 `dukla-base` 即可获得统一的依赖版本与编译配置，**无需再声明版本号**：
+业务工程的 `pom.xml` 继承 `dukla-base` 即可获得统一的依赖版本与编译配置。开发阶段可使用 `develop` 上的快照版本：
 
 ```xml
 <parent>
     <groupId>com.dukla</groupId>
     <artifactId>dukla-base</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
 </parent>
 ```
 
@@ -60,7 +67,7 @@
 </dependencies>
 ```
 
-版本由父 POM 的 `dependencyManagement` 统一管理，子模块统一继承父 POM 的版本号，子模块自身不再声明 `<version>`。
+依赖版本由根 POM 的 `dependencyManagement` 统一管理，子模块无需声明 `<version>`。
 
 ## 构建
 
@@ -74,4 +81,13 @@ mvn clean install -DskipTests
 mvn validate
 ```
 
-发布/热修复由 `jgitflow-maven-plugin` 管理，配置了 `autoVersionSubmodules`，release 时会自动同步所有子模块版本。
+## 版本升级
+
+升级版本时，需同时修改根 POM 的 `<version>` 和全部子模块 `<parent>` 中的 `<version>`（子模块自身不写 `<version>`）。两者必须一致，否则 Maven 会去本地/远程仓库查找旧版本父 POM 而构建失败。
+
+根 POM 已配置 `jgitflow-maven-plugin`（`autoVersionSubmodules=true`）。在可直连 GitHub 的环境下，可用以下命令自动完成版本同步、打 tag 与分支合并：
+
+```bash
+mvn jgitflow:release-start
+mvn jgitflow:release-finish
+```
