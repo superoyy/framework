@@ -166,7 +166,7 @@ public class ExcelHandler {
 	 * 验证Excel数据
 	 */
 	public List<ExcelMessage> verifyExcel(String fileName,long fileSize,InputStream in) throws Exception{
-		List<ExcelMessage> msgList=new ArrayList<>();
+		List<ExcelMessage> msgList=new ArrayList();
 		String fileExt=fileName.substring(fileName.lastIndexOf('.'));
 		if(this.config==null){
 			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"配置对象不存在"));
@@ -242,7 +242,7 @@ public class ExcelHandler {
 	private void verifyCell(Cell cell,ExcelColumn column,List<ExcelMessage> msgList,CreationHelper factory, Drawing drawing) throws Exception{
 		switch (column.getColType()){
 		case ExcelColumn.TYPE_STRING :
-			if(cell.getCellType()==Cell.CELL_TYPE_STRING){
+			if(cell.getCellTypeEnum() == CellType.STRING){
 				String cellValue=cell.getStringCellValue();
 				if(!column.isEmpty() && (cellValue==null || cellValue.trim().length()==0)){
 					msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"第"+String.valueOf(cell.getRowIndex()+1)+"行,第"+String.valueOf(cell.getColumnIndex()+1)+"列:为空"));
@@ -264,7 +264,7 @@ public class ExcelHandler {
 			}
 			break;
 		case ExcelColumn.TYPE_NUMBER :
-			if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
+			if(cell.getCellTypeEnum()==CellType.NUMERIC){
 				Double cellValue=cell.getNumericCellValue();
 				if(!column.isEmpty() && cellValue==null){
 					msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"第"+String.valueOf(cell.getRowIndex()+1)+"行,第"+String.valueOf(cell.getColumnIndex()+1)+"列:为空"));
@@ -276,7 +276,7 @@ public class ExcelHandler {
 			}
 			break;
 		case ExcelColumn.TYPE_DATE :
-			if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
+			if(cell.getCellTypeEnum()==CellType.NUMERIC){
 				Double cellValue=cell.getNumericCellValue();
 				if(!column.isEmpty() && cellValue==null){
 					msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"第"+String.valueOf(cell.getRowIndex()+1)+"行,第"+String.valueOf(cell.getColumnIndex()+1)+"列:为空"));
@@ -451,142 +451,5 @@ public class ExcelHandler {
 	}
 
 
-	/*
-	 * 写Excel数据
-	 */
-	public List<ExcelMessage> writeExcel(File template,List<Map<String,Object>> dataList) throws Exception{
-		List<ExcelMessage> msgList=new ArrayList<ExcelMessage>();
-		if(this.config==null){
-			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"配置对象不存在"));
-		}else if(!template.exists()){
-			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"输出模板文件不存在"));
-		}else if(this.config.getWriteFilePath()==null || this.config.getWriteFileName()==null){
-			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"未定义输出路径和输出文件名"));
-		}else{
-			InputStream in=new FileInputStream(template);
-			this.writeExcel(in,dataList, msgList);
-		}
 
-		return msgList;
-	}
-
-	/*
-	 * 写Excel数据
-	 */
-	public List<ExcelMessage> writeExcel(List<Map<String,Object>> dataList) throws Exception{
-		List<ExcelMessage> msgList=new ArrayList<ExcelMessage>();
-		if(this.config==null){
-			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"配置对象不存在"));
-		}else if(this.config.getWriteFilePath()==null || this.config.getWriteFileName()==null){
-			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_ERROR,"未定义输出路径和输出文件名"));
-		}else{
-			this.writeExcel(null,dataList, msgList);
-		}
-		return msgList;
-	}
-
-	/*
-	 * 写Excel数据
-	 */
-	private void writeExcel(InputStream in,List<Map<String,Object>> dataList,List<ExcelMessage> msgList) throws Exception{
-		Workbook workbook;
-		if(this.config.getOfficeVer()== ExcelConfig.OFFICE_2003){
-			if(in!=null){
-				workbook = new HSSFWorkbook(in);
-			}else{
-				workbook = new HSSFWorkbook();
-			}
-		}else{//2007文件
-			if(in!=null){
-				workbook = new XSSFWorkbook(in);
-			}else{
-				workbook = new XSSFWorkbook();
-			}
-		}
-		Sheet sheet;
-		if(in==null){
-			sheet = workbook.createSheet("数据");
-		}else{
-			sheet=workbook.getSheetAt(0);
-		}
-		for(int i=0;i<dataList.size();i++){
-			Map<String,Object> data=dataList.get(i);
-			Row row=sheet.createRow(this.config.getStartRowNum()+i);
-			this.writeRow(row, data, msgList);
-		}
-		OutputStream out=new FileOutputStream(this.config.getWriteFilePath()+this.config.getWriteFileName());
-		workbook.write(out);
-		out.close();
-		if(msgList.size()==0){
-			msgList.add(new ExcelMessage(ExcelMessage.LEVEL_INFO,"成功导出"+String.valueOf(dataList.size())+"条记录到["+this.config.getWriteFilePath()+this.config.getWriteFileName()+"]文件中"));
-		}
-	}
-
-	/*
-	 * 写行数据
-	 */
-	private void writeRow(Row row,Map<String,Object> data,List<ExcelMessage> msgList) throws Exception{
-		Set<String> keySet=data.keySet();
-		for(String key:keySet){
-			ExcelColumn column=this.getColumn(key);
-			if(column!=null){
-				Cell cell=row.createCell(column.getColNum());
-				Object value=data.get(key);
-				if(value!=null){
-					this.writeCell(cell, value,column, msgList);
-				}
-			}else{
-				msgList.add(new ExcelMessage(ExcelMessage.LEVEL_WARN,"列:["+key+"]未定义"));
-			}
-		}
-	}
-
-	/*
-	 * 得到列定义
-	 */
-	private ExcelColumn getColumn(String colName){
-		for(ExcelColumn column:this.config.getExcelColumnList()){
-			if(colName.equals(column.getColName())){
-				return column;
-			}
-		}
-		return null;
-	}
-
-	/*
-	 * 写列数据
-	 */
-	private void writeCell(Cell cell,Object value,ExcelColumn column,List<ExcelMessage> msgList) throws Exception{
-		switch (column.getColType()){
-		case ExcelColumn.TYPE_STRING :
-			cell.setCellValue(Kit.getObjStr(value));
-			break;
-		case ExcelColumn.TYPE_NUMBER :
-			if(value instanceof Double){
-				cell.setCellValue((Double)value);
-			}else if(value instanceof Long){
-				cell.setCellValue((Long)value);
-			}else if(value instanceof Integer){
-				cell.setCellValue((Integer)value);
-			}else if(value instanceof BigDecimal){
-				cell.setCellValue(((BigDecimal)value).doubleValue());
-			}
-			break;
-		case ExcelColumn.TYPE_DATE :
-			if(value instanceof Date){
-				Workbook wb=cell.getRow().getSheet().getWorkbook();
-				CreationHelper createHelper = wb.getCreationHelper();
-				CellStyle cellStyle = wb.createCellStyle();
-				cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-mm-dd"));
-				cell.setCellStyle(cellStyle);
-				cell.setCellValue((Date) value);
-			}else{
-				msgList.add(new ExcelMessage(ExcelMessage.LEVEL_WARN,"第"+String.valueOf(cell.getRowIndex()-this.config.getStartRowNum())+"行,列:["+column.getColName()+"]非时间类型"));
-			}
-			break;
-		default:
-			break;
-		}
-	}
-	
 }

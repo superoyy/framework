@@ -1,0 +1,10 @@
+master-build:
+  script:
+    - mvn clean install deploy -Dmaven.test.skip=true
+  only:
+    - master
+release-build:
+  script:
+    - mvn clean deploy -Dmaven.test.skip=true
+  only:
+    - /^release.*/

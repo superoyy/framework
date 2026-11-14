@@ -2,29 +2,31 @@ package com.dukla.base.jpa.dao;
 
 import java.io.Serializable;
 
-/*
+/**
  * 查询条件对象
+ * duka.ou
+ * 2019.10
  */
 public class QueryParam implements Serializable{
 
-	/*
+	/**
 	 * 条件关系 
 	 * and | or
 	 */
 	private String conOper;
 
-	/*
+	/**
 	 * 条件名称
 	 */
 	private String paramName;
 	
-	/*
+	/**
 	 * 操作符 
 	 * 支持：=,like,<,<=,>,>=,<>,in,is,between    
 	 */
 	private String operator;
 	
-	/*
+	/**
 	 * 参数值
 	 * 当operator为 =,like,<,<=,>,>= 时传单值 Object类型
 	 * 当operator为 is 时只能为 "null" 和 "not null" 2种
