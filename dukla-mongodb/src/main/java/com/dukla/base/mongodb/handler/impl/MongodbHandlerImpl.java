@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +41,9 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
 
 
     @Autowired
-    GridFsTemplate gridFsTemplate;
+    private GridFsTemplate gridFsTemplate;
 
-    private Map<String, MongodbBaseDao> daoMap=new HashMap<>();
+    private Map<String,MongodbBaseDao> daoMap=new HashMap<>();
 
     private MongodbBaseDao getDao(String className){
         MongodbBaseDao dao=this.daoMap.get(className);
@@ -57,117 +58,125 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
         if(event.getApplicationContext()!=null){
             Map<String,MongodbBaseDao> daoCollection=event.getApplicationContext().getBeansOfType(MongodbBaseDao.class);
             for (MongodbBaseDao dao:daoCollection.values()){
-                logger.info("{} Register Mongodb DaoMap:{} -> {}",this.getClass().getTypeName(),dao.getEntityClazz().getCanonicalName(),dao.getClass().getCanonicalName());
+                logger.info("{} Register DaoMap:{} -> {}",this.getClass().getTypeName(),dao.getEntityClazz().getCanonicalName(),dao.getClass().getCanonicalName());
                 this.daoMap.put(dao.getEntityClazz().getCanonicalName(), dao);
             }
         }
 
     }
 
+
     @Override
-    public <T> T getEntityById(Class<T> entityClazz, String id) {
+    public void setDaoMap(Collection<MongodbBaseDao> daoCollection) {
+        for (MongodbBaseDao dao:daoCollection){
+            this.daoMap.put(dao.getEntityClazz().getCanonicalName(), dao);
+        }
+    }
+
+    @Override
+    public <T> T getEntityById(Class<T> entityClazz, String id) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return (T) dao.getEntityById(id);
     }
 
     @Override
-    public long getEntityCountAll(Class entityClazz) {
+    public long getEntityCountAll(Class entityClazz) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityCountAll();
     }
 
     @Override
-    public <T> List<T> getEntityAll(Class<T> entityClazz) {
+    public <T> List<T> getEntityAll(Class<T> entityClazz) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityAll();
     }
 
     @Override
-    public <T> List<T> getEntityAll(Class<T> entityClazz, Map<String, String> orderProps) {
+    public <T> List<T> getEntityAll(Class<T> entityClazz, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityAll(orderProps);
     }
 
     @Override
-    public <T> List<T> getEntityAll(Class<T> entityClazz, int start, int count, Map<String, String> orderProps) {
+    public <T> List<T> getEntityAll(Class<T> entityClazz, int start, int count, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityAll(start,count,orderProps);
     }
 
     @Override
-    public long getEntityCountByProps(Class entityClazz, Map<String, Object> params) {
+    public long getEntityCountByProps(Class entityClazz, Map<String, Object> params) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityCountByProps(params);
     }
 
     @Override
-    public <T> List<T> getEntityListByProps(Class<T> entityClazz, Map<String, Object> params, Map<String, String> orderProps) {
+    public <T> List<T> getEntityListByProps(Class<T> entityClazz, Map<String, Object> params, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByProps(params,orderProps);
     }
 
     @Override
-    public <T> List<T> getEntityListByProps(Class<T> entityClazz, Map<String, Object> params) {
+    public <T> List<T> getEntityListByProps(Class<T> entityClazz, Map<String, Object> params) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByProps(params);
     }
 
     @Override
-    public <T> List<T> getEntityListByProps(Class<T> entityClazz, Map<String, Object> params, int start, int count, Map<String, String> orderProps) {
+    public <T> List<T> getEntityListByProps(Class<T> entityClazz, Map<String, Object> params, int start, int count, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByProps(params,start,count,orderProps);
     }
 
     @Override
-    public long getEntityCountByProp(Class entityClazz, String propKey, Object propValue) {
+    public long getEntityCountByProp(Class entityClazz, String propKey, Object propValue) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityCountByProp(propKey,propValue);
     }
 
     @Override
-    public <T> List<T> getEntityListByProp(Class<T> entityClazz, String propKey, Object propValue, Map<String, String> orderProps) {
+    public <T> List<T> getEntityListByProp(Class<T> entityClazz, String propKey, Object propValue, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByProp(propKey,propValue,orderProps);
     }
 
     @Override
-    public <T> List<T> getEntityListByProp(Class<T> entityClazz, String propKey, Object propValue) {
+    public <T> List<T> getEntityListByProp(Class<T> entityClazz, String propKey, Object propValue) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByProp(propKey,propValue);
     }
 
     @Override
-    public <T> List<T> getEntityListByProp(Class<T> entityClazz, String propKey, Object propValue, int start, int count, Map<String, String> orderProps) {
+    public <T> List<T> getEntityListByProp(Class<T> entityClazz, String propKey, Object propValue, int start, int count, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByProp(propKey,propValue,start,count,orderProps);
     }
 
     @Override
-    public long getEntityCountByCriteria(Class entityClazz, Criteria criteria) {
+    public long getEntityCountByCriteria(Class entityClazz, Criteria criteria) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityCountByCriteria(criteria);
     }
 
     @Override
-    public <T> List<T> getEntityListByCriteria(Class<T> entityClazz, Criteria criteria, int start, int count, Map<String, String> orderProps) {
+    public <T> List<T> getEntityListByCriteria(Class<T> entityClazz, Criteria criteria, int start, int count, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByCriteria(criteria,start,count,orderProps);
     }
 
     @Override
-    public <T> List<T> getEntityListByCriteria(Class<T> entityClazz, Criteria criteria, Map<String, String> orderProps) {
+    public <T> List<T> getEntityListByCriteria(Class<T> entityClazz, Criteria criteria, Map<String, String> orderProps) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByCriteria(criteria,orderProps);
     }
 
     @Override
-    public <T> List<T> getEntityListByCriteria(Class<T> entityClazz, Criteria criteria) {
+    public <T> List<T> getEntityListByCriteria(Class<T> entityClazz, Criteria criteria) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         return dao.getEntityListByCriteria(criteria);
     }
 
     @Override
-    public String addEntity(BaseDocumentEntity entity) {
+    public String addEntity(BaseDocumentEntity entity) throws Exception {
         MongodbBaseDao dao=this.getDao(entity.getClass().getCanonicalName());
         return dao.insertEntity(entity);
     }
@@ -217,32 +226,32 @@ public class MongodbHandlerImpl implements MongodbHandler,ApplicationListener<Ap
     }
 
     @Override
-    public <T> void removeEntity(Class<T> entityClazz, String id)  {
+    public <T> void removeEntity(Class<T> entityClazz, String id) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         dao.deleteEntity(id);
     }
 
     @Override
-    public <T> void removeEntityAll(Class<T> entityClazz) {
+    public <T> void removeEntityAll(Class<T> entityClazz) throws Exception{
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         dao.deleteEntityAll();
     }
 
 
     @Override
-    public <T> void removeEntityBatch(Class<T> entityClazz, Criteria criteria)  {
+    public <T> void removeEntityBatch(Class<T> entityClazz, Criteria criteria) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         dao.deleteEntityByCriteria(criteria);
     }
 
     @Override
-    public <T> void removeEntityBatch(Class<T> entityClazz, Map<String, Object> params)  {
+    public <T> void removeEntityBatch(Class<T> entityClazz, Map<String, Object> params) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         dao.deleteEntityByProps(params);
     }
 
     @Override
-    public <T> void removeEntityBatch(Class<T> entityClazz, String propKey, Object propValue)  {
+    public <T> void removeEntityBatch(Class<T> entityClazz, String propKey, Object propValue) throws Exception {
         MongodbBaseDao dao=this.getDao(entityClazz.getCanonicalName());
         dao.deleteEntityByProp(propKey, propValue);
     }

@@ -14,8 +14,6 @@ import java.util.Map;
  */
 public interface HibernateHandler {
 
-    public void registerDaoMap(ApplicationContext applicationContext);
-
     public String addEntity(BaseEntity entity);
 
     public void modifyEntity(BaseEntity entity);

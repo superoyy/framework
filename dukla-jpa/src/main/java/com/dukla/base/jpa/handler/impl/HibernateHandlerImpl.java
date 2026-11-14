@@ -38,16 +38,12 @@ public class HibernateHandlerImpl implements HibernateHandler,ApplicationListene
         return dao;
     }
 
-    /**
-     * map entityBean to Dao
-     * @param applicationContext
-     */
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
         if(event.getApplicationContext()!=null){
             Map<String,HibernateBaseDao> daoCollection=event.getApplicationContext().getBeansOfType(HibernateBaseDao.class);
             for (HibernateBaseDao dao:daoCollection.values()){
-                logger.info("{} Register Hibernate DaoMap:{} -> {}",this.getClass().getTypeName(),dao.getEntityClazz().getCanonicalName(),dao.getClass().getCanonicalName());
+                logger.info("{} Register DaoMap:{} -> {}",this.getClass().getTypeName(),dao.getEntityClazz().getCanonicalName(),dao.getClass().getCanonicalName());
                 this.daoMap.put(dao.getEntityClazz().getCanonicalName(), dao);
             }
         }
