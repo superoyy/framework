@@ -1,16 +1,16 @@
 package com.dukla.base.util.excel;
 
-/*
+/**
  * Excel列定义
  * by Dukla.ou
  */
 public class ExcelColumn {
 	
-	public final static int TYPE_STRING=0;
+	public final static int TYPE_STRING = 0;
 	
-	public final static int TYPE_NUMBER=1;
+	public final static int TYPE_NUMBER = 1;
 	
-	public final static int TYPE_DATE=2;
+	public final static int TYPE_DATE = 2;
 	
 	//列号
 	private int colNum;

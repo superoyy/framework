@@ -1,16 +1,16 @@
 package com.dukla.base.util.excel;
 
-/*
+/**
  * Excel数据验证消息
  * by Dukla.ou
  */
 public class ExcelMessage {
 	
-	public final static int LEVEL_INFO=0;
+	public final static int LEVEL_INFO = 0;
 	
-	public final static int LEVEL_WARN=1;
+	public final static int LEVEL_WARN = 1;
 	
-	public final static int LEVEL_ERROR=2;
+	public final static int LEVEL_ERROR = 2;
 	
 	private int level;
 	

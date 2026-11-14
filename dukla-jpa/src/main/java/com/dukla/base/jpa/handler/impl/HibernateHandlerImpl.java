@@ -7,6 +7,7 @@ import com.dukla.base.jpa.handler.HibernateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -47,7 +48,6 @@ public class HibernateHandlerImpl implements HibernateHandler,ApplicationListene
             }
         }
     }
-
 
     @Transactional
     @Override

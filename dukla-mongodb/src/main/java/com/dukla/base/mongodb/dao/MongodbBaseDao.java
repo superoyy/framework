@@ -125,11 +125,9 @@ public abstract class MongodbBaseDao<T extends BaseDocumentEntity> {
         if (orderProps != null) {
             for (String key : orderProps.keySet()) {
                 if ("ASC".equals(orderProps.get(key).toUpperCase())) {
-                    Sort sort=new Sort(Sort.Direction.ASC,key);
-                    query.with(sort);
+                    query.with(Sort.by(key).ascending());
                 } else if ("DESC".equals(orderProps.get(key).toUpperCase())) {
-                    Sort sort=new Sort(Sort.Direction.DESC,key);
-                    query.with(sort);
+                    query.with(Sort.by(key).descending());
                 }
             }
         }

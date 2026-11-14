@@ -2,6 +2,7 @@ package com.dukla.base.jpa.handler;
 
 import com.dukla.base.jpa.dao.QueryParam;
 import com.dukla.base.jpa.entity.BaseEntity;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 import java.util.Map;

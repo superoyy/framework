@@ -3,7 +3,6 @@ package com.dukla.base.hbase;
 /**
  * Created by dukla on 10/23/19.
  */
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
@@ -317,24 +316,24 @@ public class HBaseUtils {
      *
      * @param tablename
      */
-    public Long countRowsWithCoprocessor(String tablename) throws Throwable {
-        TableName name = TableName.valueOf(tablename);
-        HTableDescriptor descriptor = admin.getTableDescriptor(name);
-        String coprocessorClass = "org.apache.hadoop.hbase.coprocessor.AggregateImplementation";
-        if (!descriptor.hasCoprocessor(coprocessorClass)) {
-            admin.disableTable(name);
-            descriptor.addCoprocessor(coprocessorClass);
-            admin.modifyTable(name, descriptor);
-            admin.enableTable(name);
-        }
-        //计时
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        Scan scan = new Scan();
-        AggregationClient aggregationClient = new AggregationClient(conf);
-        Long count = aggregationClient.rowCount(name, new LongColumnInterpreter(), scan);
-        stopWatch.stop();
-        System.out.println("RowCount：" + count + "，全表count统计耗时：" + stopWatch.getTime());
-        return count;
-    }
+//    public Long countRowsWithCoprocessor(String tablename) throws Throwable {
+//        TableName name = TableName.valueOf(tablename);
+//        HTableDescriptor descriptor = admin.getTableDescriptor(name);
+//        String coprocessorClass = "org.apache.hadoop.hbase.coprocessor.AggregateImplementation";
+//        if (!descriptor.hasCoprocessor(coprocessorClass)) {
+//            admin.disableTable(name);
+//            descriptor.addCoprocessor(coprocessorClass);
+//            admin.modifyTable(name, descriptor);
+//            admin.enableTable(name);
+//        }
+//        //计时
+//        StopWatch stopWatch = new StopWatch();
+//        stopWatch.start();
+//        Scan scan = new Scan();
+//        AggregationClient aggregationClient = new AggregationClient(conf);
+//        Long count = aggregationClient.rowCount(name, new LongColumnInterpreter(), scan);
+//        stopWatch.stop();
+//        System.out.println("RowCount：" + count + "，全表count统计耗时：" + stopWatch.getTime());
+//        return count;
+//    }
 }
